@@ -125,7 +125,7 @@ namespace DocumentManager.Controllers
                     var newCsvEntry = new CsvData
                     {
                         Name = fileName,
-                        Path = filePath, 
+                        Path =  Path.Combine("Docs\\", fileName), 
                         Category = "SomeCategory"
                     };
 
