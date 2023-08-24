@@ -14,7 +14,6 @@ namespace DocumentManager.Controllers
     [Route("[controller]")]
     public class DocumentController : ControllerBase
     {
-        // public static string publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "public");
         public static string docsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public\\Docs");
         public static string documentCsvFilePath = Path.Combine(docsFolder, "Documents.csv");
 
