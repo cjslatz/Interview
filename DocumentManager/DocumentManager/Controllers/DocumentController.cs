@@ -15,6 +15,7 @@ namespace DocumentManager.Controllers
     public class DocumentController : ControllerBase
     {
         public static string docsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public\\Docs");
+        public static string publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public");
         public static string documentCsvFilePath = Path.Combine(docsFolder, "Documents.csv");
 
         private List<CsvData> ReadCsvFile(string filePath)
@@ -71,7 +72,7 @@ namespace DocumentManager.Controllers
             {
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var filePathToDelete = Path.Combine(Directory.GetCurrentDirectory(), path); 
+                    var filePathToDelete = Path.Combine(publicFolder, path); 
                     if (System.IO.File.Exists(filePathToDelete))
                     {
                         List<CsvData> csvDataList;
