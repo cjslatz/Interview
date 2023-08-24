@@ -1,38 +1,14 @@
 ﻿import React, { useState, useEffect } from 'react';
+import FileUploadForm from './FileUploadForm';
+import DocumentTable from './DocumentTable';
 
 function DocumentManager() {
     const [rows, setRows] = useState([]);
-    const [file, setFile] = useState(null);
-
-    const handleFileChange = (event) => {
-        setFile(event.target.files[0]);
-    };
-
-    const handleUpload = async () => {
-        if (file) {
-            try {
-                const formData = new FormData();
-                formData.append('file', file);
-
-                const response = await fetch('/document/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    fetchData();
-                } else {
-                    console.error('Failed to upload the file.');
-                }
-            } catch (error) {
-                console.error('Error uploading the file:', error);
-            }
-        } else {
-            console.error('No file selected for upload.');
-        }
-    };
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchData = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch('/document');
             if (!response.ok) {
@@ -41,7 +17,9 @@ function DocumentManager() {
             const data = await response.json();
             setRows(data);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            setError(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -62,48 +40,26 @@ function DocumentManager() {
                 updatedRows.splice(index, 1);
                 setRows(updatedRows);
             } else {
-                console.error('Failed to delete the file.');
+                setError('Failed to delete the file.');
             }
         } catch (error) {
-            console.error('Error deleting the file:', error);
+            setError('Error deleting the file: ' + error.message);
         }
     };
 
     return (
         <div>
-            <div>
-                <input type="file" accept=".pdf" onChange={handleFileChange} />
-                <button onClick={handleUpload}>Upload</button>
-            </div>
-
-            <table className="custom-table">
-                <thead>
-                    <tr>
-                        <th>View</th>
-                        <th>Name</th>
-                        <th>Path</th>
-                        <th>Category</th>
-                        <th>Select</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows.map((row, index) => (
-                        <tr key={index}>
-                            <td>
-                                <a href={row.path} target="_blank" rel="noopener noreferrer">
-                                    View
-                                </a>
-                            </td>
-                            <td>{row.name}</td>
-                            <td>{row.path}</td>
-                            <td>{row.category}</td>
-                            <td>
-                                <button onClick={() => handleDelete(index)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <FileUploadForm
+                onUploadSuccess={() => fetchData()}
+                onError={(error) => setError(error)}
+            />
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : error ? (
+                <p>Error: {error.message}</p>
+            ) : (
+                <DocumentTable rows={rows} onDelete={handleDelete} />
+            )}
         </div>
     );
 }

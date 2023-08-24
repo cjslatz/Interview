@@ -2,11 +2,7 @@
 using CsvHelper.Configuration;
 using DocumentManager.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Globalization;
-using System;
-using System.Globalization;
-using System.IO;
 
 namespace DocumentManager.Controllers
 {
@@ -14,42 +10,15 @@ namespace DocumentManager.Controllers
     [Route("[controller]")]
     public class DocumentController : ControllerBase
     {
-        public static string docsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public\\Docs");
-        public static string publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public");
-        public static string documentCsvFilePath = Path.Combine(docsFolder, "Documents.csv");
+        private readonly string docsFolder;
+        private readonly string publicFolder;
+        private readonly string documentCsvFilePath;
 
-        private List<CsvData> ReadCsvFile(string filePath)
+        public DocumentController()
         {
-            try
-            {
-                using (var reader = new StreamReader(filePath))
-                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-                {
-                    return csv.GetRecords<CsvData>().ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error reading CSV file: {ex.Message}");
-                return new List<CsvData>();
-            }
-        }
-
-        private void WriteCsvFile(string filePath, List<CsvData> csvDataList)
-        {
-            try
-            {
-                using (var writer = new StreamWriter(filePath))
-                using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
-                {
-                    csv.WriteRecords(csvDataList);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error writing CSV file: {ex.Message}");
-                throw;
-            }
+            docsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public\\Docs");
+            publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public");
+            documentCsvFilePath = Path.Combine(docsFolder, "Documents.csv");
         }
 
         [HttpGet]
@@ -72,15 +41,10 @@ namespace DocumentManager.Controllers
             {
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var filePathToDelete = Path.Combine(publicFolder, path); 
+                    var filePathToDelete = Path.Combine(publicFolder, path);
                     if (System.IO.File.Exists(filePathToDelete))
                     {
-                        List<CsvData> csvDataList;
-                        using (var reader = new StreamReader(documentCsvFilePath))
-                        using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-                        {
-                            csvDataList = csv.GetRecords<CsvData>().ToList();
-                        }
+                        var csvDataList = ReadCsvFile();
 
                         var csvLines = System.IO.File.ReadAllLines(documentCsvFilePath).ToList();
 
@@ -126,15 +90,15 @@ namespace DocumentManager.Controllers
                     var newCsvEntry = new CsvData
                     {
                         Name = fileName,
-                        Path =  Path.Combine("Docs\\", fileName), 
+                        Path = Path.Combine("Docs\\", fileName),
                         Category = "SomeCategory"
                     };
 
-                    var csvDataList = ReadCsvFile(documentCsvFilePath);
+                    var csvDataList = ReadCsvFile();
 
                     csvDataList.Add(newCsvEntry);
 
-                    WriteCsvFile(documentCsvFilePath, csvDataList);
+                    WriteCsvFile(csvDataList);
 
                     return Ok("File uploaded successfully.");
                 }
@@ -147,6 +111,16 @@ namespace DocumentManager.Controllers
             {
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
+        }
+
+        private List<CsvData> ReadCsvFile()
+        {
+            return CsvHelperExtensions.ReadCsvFile(documentCsvFilePath);
+        }
+
+        private void WriteCsvFile(List<CsvData> csvDataList)
+        {
+            CsvHelperExtensions.WriteCsvFile(documentCsvFilePath, csvDataList);
         }
     }
 }

@@ -18,25 +18,57 @@ code {
     border-collapse: collapse;
 }
 
-    .custom-table th, .custom-table td {
-        padding: 8px 12px;
-        border: 1px solid #ccc;
-        text-align: left;
-    }
+.custom-table th, .custom-table td {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
 
-    .custom-table th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }
+.custom-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
 
-    .custom-table tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
+.custom-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
 
-    .custom-table tr:hover {
-        background-color: #e0e0e0;
-    }
+.custom-table tr:hover {
+    background-color: #e0e0e0;
+}
 
-    .custom-table input[type="checkbox"] {
-        margin-right: 4px;
-    }
+.custom-table input[type="checkbox"] {
+    margin-right: 4px;
+}
+
+.file-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.file-input {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.upload-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
