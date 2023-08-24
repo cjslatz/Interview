@@ -14,12 +14,12 @@ const AppRoutes = [
   },
   {
     path: '/fetch-data',
-      element: <DocumentManager />
-    },
-    {
-        path: '/document-manager',
-        element: <DocumentManager />
-    }
+    element: <DocumentManager />
+  },
+  {
+    path: '/document-manager',
+    element: <DocumentManager />
+  }
 ];
 
 export default AppRoutes;
