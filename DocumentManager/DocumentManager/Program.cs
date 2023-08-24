@@ -19,22 +19,6 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/Docs"
 });
 
-app.Map("/pdfs/{*path}", async context =>
-{
-    var pdfPath = context.Request.Path.Value;
-    var fileInfo = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "Docs", pdfPath));
-
-    if (fileInfo.Exists)
-    {
-        context.Response.ContentType = "application/pdf";
-        await context.Response.SendFileAsync(fileInfo.FullName);
-    }
-    else
-    {
-        context.Response.StatusCode = 404;
-    }
-});
-
 app.UseRouting();
 
 
