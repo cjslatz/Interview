@@ -15,7 +15,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Docs")),
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "ClientApp/public")),
     RequestPath = "/Docs"
 });
 
