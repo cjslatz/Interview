@@ -5,9 +5,9 @@ using System.Globalization;
 
 namespace DocumentManager.Controllers
 {
-    public static class CsvHelperExtensions
+    public class CsvHelperExtensions : ICsvHelperExtension
     {
-        public static List<CsvData> ReadCsvFile(string filePath)
+        public List<CsvData> ReadCsvFile(string filePath)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace DocumentManager.Controllers
             }
         }
 
-        public static void WriteCsvFile(string filePath, List<CsvData> csvDataList)
+        public void WriteCsvFile(string filePath, List<CsvData> csvDataList)
         {
             try
             {

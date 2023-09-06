@@ -34,7 +34,7 @@ function FileUploadForm({ onUploadSuccess, onError }) {
     return (
         <div className="file-upload-container">
             <input type="file" accept=".pdf" onChange={handleFileChange} className="file-input" />
-            <button onClick={handleUpload} className="upload-button">
+            <button onClick={handleUpload} className="upload-button" disabled={!file }>
                 Upload File
             </button>
         </div>

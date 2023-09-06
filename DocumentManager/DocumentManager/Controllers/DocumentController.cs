@@ -10,22 +10,24 @@ namespace DocumentManager.Controllers
     [Route("[controller]")]
     public class DocumentController : ControllerBase
     {
-        private readonly string docsFolder;
-        private readonly string publicFolder;
-        private readonly string documentCsvFilePath;
+        private readonly string _docsFolder;
+        private readonly string _publicFolder;
+        private readonly string _documentCsvFilePath;
+        private readonly ICsvHelperExtension _csvHelperExtension;
 
-        public DocumentController()
+        public DocumentController(ICsvHelperExtension csvHelperExtension)
         {
-            docsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public\\Docs");
-            publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public");
-            documentCsvFilePath = Path.Combine(docsFolder, "Documents.csv");
+            _csvHelperExtension = csvHelperExtension;
+            _docsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public\\Docs");
+            _publicFolder = Path.Combine(Directory.GetCurrentDirectory(), "ClientApp\\public");
+            _documentCsvFilePath = Path.Combine(_docsFolder, "Documents.csv");
         }
 
         [HttpGet]
         public ActionResult<List<CsvData>> Get()
         {
             List<CsvData> csvDataList;
-            using (var reader = new StreamReader(documentCsvFilePath))
+            using (var reader = new StreamReader(_documentCsvFilePath))
             using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
             {
                 csvDataList = csv.GetRecords<CsvData>().ToList();
@@ -41,16 +43,16 @@ namespace DocumentManager.Controllers
             {
                 if (!string.IsNullOrEmpty(path))
                 {
-                    var filePathToDelete = Path.Combine(publicFolder, path);
+                    var filePathToDelete = Path.Combine(_publicFolder, path);
                     if (System.IO.File.Exists(filePathToDelete))
                     {
-                        var csvDataList = ReadCsvFile();
+                        var csvDataList = _csvHelperExtension.ReadCsvFile(_documentCsvFilePath);
 
-                        var csvLines = System.IO.File.ReadAllLines(documentCsvFilePath).ToList();
+                        var csvLines = System.IO.File.ReadAllLines(_documentCsvFilePath).ToList();
 
                         csvLines.RemoveAll(line => line.Contains(path));
 
-                        System.IO.File.WriteAllLines(documentCsvFilePath, csvLines);
+                        System.IO.File.WriteAllLines(_documentCsvFilePath, csvLines);
 
                         System.IO.File.Delete(filePathToDelete);
                     }
@@ -80,7 +82,7 @@ namespace DocumentManager.Controllers
                 if (file != null && file.Length > 0)
                 {
                     var fileName = Path.GetFileName(file.FileName);
-                    var filePath = Path.Combine(docsFolder, fileName);
+                    var filePath = Path.Combine(_docsFolder, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -94,11 +96,11 @@ namespace DocumentManager.Controllers
                         Category = "SomeCategory"
                     };
 
-                    var csvDataList = ReadCsvFile();
+                    var csvDataList = _csvHelperExtension.ReadCsvFile(_documentCsvFilePath);
 
                     csvDataList.Add(newCsvEntry);
 
-                    WriteCsvFile(csvDataList);
+                    _csvHelperExtension.WriteCsvFile(_documentCsvFilePath, csvDataList);
 
                     return Ok("File uploaded successfully.");
                 }
@@ -111,16 +113,6 @@ namespace DocumentManager.Controllers
             {
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
-        }
-
-        private List<CsvData> ReadCsvFile()
-        {
-            return CsvHelperExtensions.ReadCsvFile(documentCsvFilePath);
-        }
-
-        private void WriteCsvFile(List<CsvData> csvDataList)
-        {
-            CsvHelperExtensions.WriteCsvFile(documentCsvFilePath, csvDataList);
         }
     }
 }
