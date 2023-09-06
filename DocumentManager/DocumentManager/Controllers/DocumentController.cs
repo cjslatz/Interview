@@ -26,14 +26,7 @@ namespace DocumentManager.Controllers
         [HttpGet]
         public ActionResult<List<CsvData>> Get()
         {
-            List<CsvData> csvDataList;
-            using (var reader = new StreamReader(_documentCsvFilePath))
-            using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-            {
-                csvDataList = csv.GetRecords<CsvData>().ToList();
-            }
-
-            return csvDataList;
+            return _csvHelperExtension.ReadCsvFile(_documentCsvFilePath);
         }
 
         [HttpDelete]
